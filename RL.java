@@ -21,10 +21,10 @@ public class RL {
 			numtrials = Integer.parseInt(args[0]); //specified in command line int 
 		
 		// run one of the following demos to see results.
-		graphicalDemo();
-		System.out.println("Demo over.");
-		System.exit(1);
-		//randomAgentDemo(numtrials);
+		//graphicalDemo();
+		//System.out.println("Demo over.");
+		//System.exit(1);
+		randomAgentDemo(numtrials);
 	}
 	
 	public static void graphicalDemo()
