@@ -58,7 +58,7 @@ public class Game
 	
 	private static boolean visualize = true;
 	private static boolean printInfo = true;
-
+	private static Random rand = new Random(12345);
 	
 	public Game ()
 	{
@@ -116,7 +116,6 @@ public class Game
 		isGameOver = false;
 		
 		//Generate the random location for the agent
-		Random rand = new Random();
 		double temp;
 		do
 		{	
@@ -354,7 +353,6 @@ public class Game
 	public static boolean EnemyAction ()
 	{
 		boolean flag = false;
-		Random rand = new Random();
 
 		
 		/*For enemy #1*/
@@ -412,7 +410,6 @@ public class Game
 	{
 		boolean flag = false;
 		char direction;
-		Random rand = new Random();
 		int ran = rand.nextInt(4);
 		
 		do

@@ -1,41 +1,149 @@
 import java.util.Random;
+import java.util.HashMap;
 
 public class MyAgent implements Agent
 {
-	
+
+	//MAPPING
+	//0 = N
+	//1 = E
+	//2 = S
+	//3 = W
+	//-------
+
+	final double GAMMA = 0.5;
+	final double EPSILON = 0.05;
+	final double ALPHA = 0.1;
+	private int lastAction;
+	private int lastY;
+	private int lastX;
+	//Section of Markov Decision Process Variables
+	HashMap<Integer, Double> qs;
+	Random generator;
+
+	public MyAgent(){
+		qs = new HashMap<Integer, Double>();
+		generator = new Random(12345);
+		for (int i = 0; i < 20; i++){
+			for (int j = 0; j < 20; j++){
+				for (int k = 0; k < 4; k++){
+					uQ(i,j,k,generator.nextDouble());
+				}
+			}
+		}
+		lastY = getAgentLocation().y;
+		lastX = getAgentLocation().x;
+		lastAction = 1;
+	}
+
 	public void LearntoPlay ()
 	{
-		//You should implement this function using your own algorithm.
-		
-		boolean flag = false;
-		char direction;
-		int ran;
-
-		ran = (new Random()).nextInt(4);
-		switch (ran)
-		{
-			case 0:  direction = 'W';  break;
-			case 1:  direction = 'E';  break;
-			case 2:  direction = 'N';  break;
-			default: direction = 'S';  break;
+		int x = getAgentLocation().x;
+		int y = getAgentLocation().y;
+		double max = Double.NEGATIVE_INFINITY;
+		int maxA = 0;
+		for (int i = 0; i < 4; i++){
+			if (gQ(y,x,i) > max){
+				max = gQ(y,x,i);
+				maxA = i;
+			}
 		}
-		flag = Action (direction);
-		//System.out.println(getReward());
+		//System.out.println(gQ(getAgentLocation().y, getAgentLocation().x, lastAction));
+		char action;
+		switch(maxA){
+			case 1: action = 'N';break;
+			case 2: action = 'E';break;
+			case 3: action = 'S';break;
+			case 4: action = 'W';break;
+			default:action = 'E';
+		}
+		if (generator.nextDouble() > EPSILON || !Action(action)){
+			switch(action){
+				case 'N': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
+				case 'E': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
+				case 'S': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
+				case 'W': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
+			}
+			Action(action);
+		}
+		switch(action){
+			case 'N': maxA = 0;break;
+			case 'E': maxA = 1;break;
+			case 'S': maxA = 2;break;
+			case 'W': maxA = 3;break;
+			default:action = 0;
+		}
+		Q(y, x, maxA);//update Q
+		lastAction = maxA;
+		lastX = x;
+		lastY = y;
 	}
-	
-	
+
+	private void Q(int y, int x, int a){
+		double max = gQ(y,x,a);
+		uQ(lastY, lastX, lastAction, gQ(lastY, lastX, lastAction) + ALPHA * (getReward() + GAMMA * max ));		
+	}
+
+	private double gQ(int y, int x, int a){
+		int hsh = 0;
+		hsh += y * 80;
+		hsh += 4 * x;
+		hsh += a;
+		return qs.get(hsh);
+	}
+
+	private void uQ(int y, int x, int a, double val){
+		int hsh = 0;
+		hsh += y * 80;
+		hsh += 4 * x;
+		hsh += a;
+		qs.put(hsh, val);
+	}
+
 	/**
 	 * @Function: evalPolicy ()
 	 * @Description:
 	 * 		Every several episodes, the Agent should evaluate the goodness of its current policy in the game.
 	 * */
-	public double evalPolicy(int i)
+	public double evalPolicy(int n)
 	{
 		//You should implement this function 
-		return 0;
+			int x = getAgentLocation().x;
+			int y = getAgentLocation().y;
+			double max = Double.NEGATIVE_INFINITY;
+			int maxA = 0;
+			for (int i = 0; i < 4; i++){
+				if (gQ(y,x,i) > max){
+					max = gQ(y,x,i);
+					maxA = i;
+				}
+			}
+			//System.out.println(gQ(getAgentLocation().y, getAgentLocation().x, lastAction));
+			char action;
+			switch(maxA){
+				case 1: action = 'N';break;
+				case 2: action = 'E';break;
+				case 3: action = 'S';break;
+				case 4: action = 'W';break;
+				default:action = 'E';
+			}
+			//Q(y, x, action);//update Q
+			if (!Action(action)){
+				switch(action){
+					case 'N': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
+					case 'E': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
+					case 'S': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
+					case 'W': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
+				}
+				Action(action);
+			}
+			lastAction = action;
+			lastX = x;
+			lastY = y;
+			return 0.0;
 	}
-	
-	
+
+
 	/**
 	 * @Function: Update ()
 	 * @Description:
@@ -43,9 +151,8 @@ public class MyAgent implements Agent
 	 * */	
 	public void Update ()
 	{
-		
 	}
-	
+
 	/**
 	 * @Function: Reset ()
 	 * @Description:
@@ -53,14 +160,14 @@ public class MyAgent implements Agent
 	 * */	
 	public void Reset ()
 	{
-		
+
 	}
-	
-	
+
+
 	/*****************************************/
 	/*You do not need to change the codes below.*/
 	/*****************************************/
-	
+
 	/**
 	 * @Function: getAgentLocation ()
 	 * @Description:
@@ -84,7 +191,7 @@ public class MyAgent implements Agent
 		//You can directly use this function and do not make any change.
 		return Game.getAgentLocation ();
 	}
-	
+
 	/**
 	 * @Function: getEnemyLocation ()
 	 * @Description:
@@ -108,8 +215,8 @@ public class MyAgent implements Agent
 		//You can directly use this function and do not make any change.
 		return Game.getEnemyLocation();
 	}
-	
-	
+
+
 	/**
 	 * @Function: Action (char direction)
 	 * @Description:
@@ -136,9 +243,9 @@ public class MyAgent implements Agent
 		//You can directly use this function and do not make any change.
 		return Game.Action(direction);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * @Function: getReward()
 	 * @Description:

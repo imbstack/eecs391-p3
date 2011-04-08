@@ -24,13 +24,15 @@ public class RL {
 		//graphicalDemo();
 		//System.out.println("Demo over.");
 		//System.exit(1);
-		randomAgentDemo(numtrials);
+		//randomAgentDemo(numtrials);
+		myAgentDemo(numtrials);
 	}
 	
 	public static void graphicalDemo()
 	{
 		new Game();
-		DemoAgent a = new DemoAgent();
+		//DemoAgent a = new DemoAgent();
+		MyAgent a = new MyAgent();
 		Scanner input = new Scanner(System.in); 
 		Game.setVisualize(true);
 		Game.setPrintInfo(true);
@@ -43,7 +45,7 @@ public class RL {
 			if(Game.getVisualize()){
 				//input.nextLine();
 				try{
-					Thread.sleep(500);
+					Thread.sleep(200);
 				}
 				catch(Exception e){
 				}
@@ -90,6 +92,7 @@ public class RL {
 				for (int j=0; j<MAX_STEPS; j++)
 				{
 					a.LearntoPlay();
+					a.Update();  // for q learning agent
 					if(Game.getVisualize())
 						input.nextLine();
 
@@ -106,4 +109,89 @@ public class RL {
 	}
 	
 	
+	public static void myAgentDemo(int numtrials)
+	{
+		int r = (int)numtrials / 50; 
+
+		//2. Construct a new game environment. (You do not need to modify this sentence)
+		new Game();
+
+		//3. Create a new Agent instance. (You can change this sentence using your own Agent name) 
+		MyAgent a = new MyAgent();
+
+		//4. The below code will implement a main loop. (You do not need to modify these sentences)
+		Scanner input = new Scanner(System.in); 
+		
+		//5. You can choose to visualize the game or not 
+		Game.setVisualize(false);
+		
+		//6. You can choose to print out the game information or not 
+		Game.setPrintInfo(false);
+
+		for (int i=0; i<r; i++) 
+		{
+			System.out.print("episode: "+(i+1)+"\t");
+
+			for(int k=0;k<50;k++){//episodes	
+			//Game.ResetInitialState();
+				for (int j=0; j<MAX_STEPS; j++)
+				{
+					a.LearntoPlay();
+					if(Game.getVisualize())
+						input.nextLine();
+
+					if (Game.isGameOver == true)
+					{
+						Game.Final ();
+						break;
+					}
+				}
+				if(Game.getVisualize())
+					input.nextLine();
+			}
+			double cRew  = 0.0;
+			for ( int k = 0; k < 5; k++){
+				Game.ResetInitialState();
+				for (int j=0; j<MAX_STEPS; j++)
+				{
+					a.evalPolicy(0);
+					if(Game.getVisualize())
+						input.nextLine();
+
+					if (Game.isGameOver == true)
+					{
+						Game.Final ();
+						cRew += Game.getCumulativeReward();
+						break;
+					}
+				}
+			}
+			System.out.println(cRew / 5);
+		}
+		showIt(a);
+	}
+	public static void showIt(Agent a)
+	{
+		Game.setVisualize(true);
+		
+		Game.ResetInitialState();
+		for (int j=0; j<MAX_STEPS; j++)
+		{
+			a.evalPolicy(0);
+			if(Game.getVisualize()){
+				//input.nextLine();
+				try{
+					Thread.sleep(200);
+				}
+				catch(Exception e){
+				}
+			}
+			if (Game.isGameOver == true)
+			{
+				Game.setVisualize(false);
+				Game.Final ();
+				break;
+			}
+		}
+	}
 }
