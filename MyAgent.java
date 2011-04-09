@@ -11,9 +11,9 @@ public class MyAgent implements Agent
 	//3 = W
 	//-------
 
-	final double GAMMA = 0.5;
-	final double EPSILON = 0.05;
-	final double ALPHA = 0.1;
+	final double GAMMA = 0.2;
+	final double EPSILON = 0.1;
+	final double ALPHA = 0.05;
 	private int lastAction;
 	private int lastY;
 	private int lastX;
@@ -33,7 +33,7 @@ public class MyAgent implements Agent
 		}
 		lastY = getAgentLocation().y;
 		lastX = getAgentLocation().x;
-		lastAction = 1;
+		lastAction = 0;
 	}
 
 	public void LearntoPlay ()
@@ -57,7 +57,8 @@ public class MyAgent implements Agent
 			case 4: action = 'W';break;
 			default:action = 'E';
 		}
-		if (generator.nextDouble() > EPSILON || !Action(action)){
+		Q(y, x, maxA);//update Q
+		if (generator.nextDouble() < EPSILON || !Action(action)){
 			switch(action){
 				case 'N': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
 				case 'E': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
@@ -73,7 +74,6 @@ public class MyAgent implements Agent
 			case 'W': maxA = 3;break;
 			default:action = 0;
 		}
-		Q(y, x, maxA);//update Q
 		lastAction = maxA;
 		lastX = x;
 		lastY = y;
@@ -81,7 +81,7 @@ public class MyAgent implements Agent
 
 	private void Q(int y, int x, int a){
 		double max = gQ(y,x,a);
-		uQ(lastY, lastX, lastAction, gQ(lastY, lastX, lastAction) + ALPHA * (getReward() + GAMMA * max ));		
+		uQ(lastY, lastX, lastAction, gQ(lastY, lastX, lastAction) + ALPHA * (getReward() + GAMMA * max - gQ(lastY, lastX, lastAction)));		
 	}
 
 	private double gQ(int y, int x, int a){
@@ -89,7 +89,12 @@ public class MyAgent implements Agent
 		hsh += y * 80;
 		hsh += 4 * x;
 		hsh += a;
+		try{
 		return qs.get(hsh);
+		}
+		catch(Exception e){
+			return Double.NEGATIVE_INFINITY;
+		}
 	}
 
 	private void uQ(int y, int x, int a, double val){
