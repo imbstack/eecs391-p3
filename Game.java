@@ -49,7 +49,7 @@ public class Game
 	public static int indicator = 0;	//1: achieve goal; 2: eaten by enemy #1; 3: eaten by enemy #2
 	
 	//information for the agent
-	private static int agent_x, agent_y;  
+	public static int agent_x, agent_y;  
 	private static int score = 0;
 	private static int previousscore = 0;
 	
@@ -189,7 +189,32 @@ public class Game
 		return Game.Action(direction, "Agent");
 	}
 	
-	
+	public static boolean isValidMove(int y, int x, int direction){
+		char action;
+		switch(direction){
+			case 0: action = 'N';break;
+			case 1: action = 'E';break;
+			case 2: action = 'S';break;
+			case 3: action = 'W';break;
+			default:action = 'E';
+		}
+		if ( x==0 && direction=='N' ) 		
+			return false;
+		else if ( x==19 && direction=='S' ) 
+			return false;
+		else if ( y==0 && direction=='W' )  
+			return false;
+		else if ( y==19 && direction=='E' ) 
+			return false;
+		for (Wall w : wallList){
+			if (x==w.x && y==w.y && action==w.direction){
+				return false;
+			}
+		}
+		System.out.println("it woked");//DEBUG
+		return true;	
+	}
+		
 	private static boolean Action (char direction, String type)
 	{	
 		

@@ -11,21 +11,24 @@ public class MyAgent implements Agent
 	//3 = W
 	//-------
 
-	final double GAMMA = 0.2;
-	final double EPSILON = 0.1;
-	final double ALPHA = 0.05;
+	final double GAMMA = 1.0;
+	final double EPSILON = 0.05;
+	final double ALPHA = 0.1;
 	private int lastAction;
 	private int lastY;
 	private int lastX;
 	//Section of Markov Decision Process Variables
 	HashMap<Integer, Double> qs;
 	Random generator;
+	int[][] visitCount;
 
 	public MyAgent(){
 		qs = new HashMap<Integer, Double>();
 		generator = new Random(12345);
+		visitCount = new int[20][20];
 		for (int i = 0; i < 20; i++){
 			for (int j = 0; j < 20; j++){
+				visitCount[j][i] = 0;
 				for (int k = 0; k < 4; k++){
 					uQ(i,j,k,generator.nextDouble());
 				}
@@ -36,28 +39,38 @@ public class MyAgent implements Agent
 		lastAction = 0;
 	}
 
+	public boolean hasBeenEnough(){
+		for (int i = 0; i < 20; i++){
+			for (int j = 0; j < 20; j++){
+				if (visitCount[j][i] < 1){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public void LearntoPlay ()
 	{
 		int x = getAgentLocation().x;
 		int y = getAgentLocation().y;
+		visitCount[y][x]++;
 		double max = Double.NEGATIVE_INFINITY;
 		int maxA = 0;
 		for (int i = 0; i < 4; i++){
-			if (gQ(y,x,i) > max){
+			if (Game.isValidMove(y, x, i) && gQ(y,x,i) > max){
 				max = gQ(y,x,i);
 				maxA = i;
 			}
 		}
-		//System.out.println(gQ(getAgentLocation().y, getAgentLocation().x, lastAction));
 		char action;
 		switch(maxA){
-			case 1: action = 'N';break;
-			case 2: action = 'E';break;
-			case 3: action = 'S';break;
-			case 4: action = 'W';break;
+			case 0: action = 'N';break;
+			case 1: action = 'E';break;
+			case 2: action = 'S';break;
+			case 3: action = 'W';break;
 			default:action = 'E';
 		}
-		Q(y, x, maxA);//update Q
 		if (generator.nextDouble() < EPSILON || !Action(action)){
 			switch(action){
 				case 'N': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
@@ -79,9 +92,17 @@ public class MyAgent implements Agent
 		lastY = y;
 	}
 
-	private void Q(int y, int x, int a){
-		double max = gQ(y,x,a);
-		uQ(lastY, lastX, lastAction, gQ(lastY, lastX, lastAction) + ALPHA * (getReward() + GAMMA * max - gQ(lastY, lastX, lastAction)));		
+	public void Update(){
+		double max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < 4; i++){
+			double d = gQ(getAgentLocation().y,getAgentLocation().x,i);
+			if (Game.isValidMove(getAgentLocation().y, getAgentLocation().x, i) && d > max){
+			 max = d;
+			}
+		}
+		//System.out.print(gQ(lastY,lastX,lastAction) + "\t->\t");
+		uQ(lastY, lastX, lastAction, gQ(lastY, lastX, lastAction) + ALPHA * (getReward() + GAMMA * max - gQ(lastY, lastX, lastAction))); 
+		//System.out.println(gQ(lastY,lastX,lastAction));
 	}
 
 	private double gQ(int y, int x, int a){
@@ -126,10 +147,10 @@ public class MyAgent implements Agent
 			//System.out.println(gQ(getAgentLocation().y, getAgentLocation().x, lastAction));
 			char action;
 			switch(maxA){
-				case 1: action = 'N';break;
-				case 2: action = 'E';break;
-				case 3: action = 'S';break;
-				case 4: action = 'W';break;
+				case 0: action = 'N';break;
+				case 1: action = 'E';break;
+				case 2: action = 'S';break;
+				case 3: action = 'W';break;
 				default:action = 'E';
 			}
 			//Q(y, x, action);//update Q
@@ -148,15 +169,6 @@ public class MyAgent implements Agent
 			return 0.0;
 	}
 
-
-	/**
-	 * @Function: Update ()
-	 * @Description:
-	 * 		This function is necessary for the Q function.
-	 * */	
-	public void Update ()
-	{
-	}
 
 	/**
 	 * @Function: Reset ()
