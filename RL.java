@@ -21,11 +21,11 @@ public class RL {
 			numtrials = Integer.parseInt(args[0]); //specified in command line int 
 		
 		// run one of the following demos to see results.
-		graphicalDemo();
-		System.out.println("Demo over.");
-		System.exit(1);
+		//graphicalDemo();
+		//System.out.println("Demo over.");
+		//System.exit(1);
 		//randomAgentDemo(numtrials);
-		//myAgentDemo(numtrials);
+		myAgentDemo(numtrials);
 	}
 	
 	public static void graphicalDemo()
@@ -143,6 +143,7 @@ public class RL {
 				for (int j=0; j<MAX_STEPS; j++)
 				{
 					a.LearntoPlay();
+					a.Update();
 					if(Game.getVisualize())
 						input.nextLine();
 
@@ -156,7 +157,7 @@ public class RL {
 					input.nextLine();
 			}
 			double cRew  = 0.0;
-			for ( int k = 0; k < 10; k++){
+			for ( int k = 0; k < 5; k++){
 				Game.ResetInitialState();
 				for (int j=0; j<MAX_STEPS; j++)
 				{
@@ -172,7 +173,7 @@ public class RL {
 					}
 				}
 			}
-			System.out.println(cRew / 10);
+			System.out.println(cRew / 5);
 		}
 		showIt(a);
 	}

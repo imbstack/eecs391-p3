@@ -211,7 +211,6 @@ public class Game
 				return false;
 			}
 		}
-		System.out.println("it woked");//DEBUG
 		return true;	
 	}
 		
