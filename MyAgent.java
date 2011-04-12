@@ -12,7 +12,7 @@ public class MyAgent implements Agent
 	//-------
 
 	final double GAMMA = 1.0;
-	final double EPSILON = 0.05;
+	final double EPSILON = 0.1;
 	final double ALPHA = 0.1;
 	private int lastAction;
 	private int lastY;
