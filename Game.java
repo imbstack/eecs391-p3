@@ -58,7 +58,7 @@ public class Game
 	
 	private static boolean visualize = true;
 	private static boolean printInfo = true;
-	private static Random rand = new Random(12345);//change back to 12345
+	private static Random rand = new Random(12345);
 	
 	public Game ()
 	{

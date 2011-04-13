@@ -72,13 +72,7 @@ public class MyAgent implements Agent
 			default:action = 'E';
 		}
 		if (generator.nextDouble() < EPSILON || !Action(action)){
-			switch(action){
-				case 'N': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
-				case 'E': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
-				case 'S': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
-				case 'W': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
-			}
-			Action(action);
+					Action(action);
 		}
 		switch(action){
 			case 'N': maxA = 0;break;
@@ -155,12 +149,7 @@ public class MyAgent implements Agent
 			}
 			//Q(y, x, action);//update Q
 			if (!Action(action)){
-				switch(action){
-					case 'N': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
-					case 'E': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
-					case 'S': action = (generator.nextDouble() > 0.5) ? 'W' : 'E';break;
-					case 'W': action = (generator.nextDouble() > 0.5) ? 'N' : 'S';break;
-				}
+				
 				Action(action);
 			}
 			lastAction = action;

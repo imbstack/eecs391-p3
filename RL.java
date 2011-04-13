@@ -129,9 +129,9 @@ public class RL {
 		//6. You can choose to print out the game information or not 
 		Game.setPrintInfo(false);
 
+		System.out.println("Learning Episodes \t Average Cumulative Reward");
 		for (int i=0; i<r; i++) 
 		{
-			System.out.print("episode: "+(i+1)+"\t");
 
 			for(int k=0;k<400;k++){//episodes	
 			Game.ResetInitialState();
@@ -173,6 +173,7 @@ public class RL {
 					}
 				}
 			}
+			System.out.print(+((i+1) * 50)+"\t\t\t\t");
 			System.out.println(cRew / 5);
 		}
 		showIt(a);
